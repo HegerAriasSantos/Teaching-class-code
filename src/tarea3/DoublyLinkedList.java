@@ -1,31 +1,37 @@
 package tarea3;
 
-import tarea3.Nodes.LinkedListSimpleNode;
+import tarea3.Nodes.DoublyLinkedListNode;
 
-public class LinkedListSimple<T> {
-  public LinkedListSimpleNode<T> head;
+public class DoublyLinkedList<T> {
+  public DoublyLinkedListNode<T> head;
+  public DoublyLinkedListNode<T> tail;
 
-  public LinkedListSimple() {
+  public DoublyLinkedList() {
     head = null;
+    tail = null;
   }
 
-  public LinkedListSimple(LinkedListSimpleNode<T> head) {
+  public DoublyLinkedList(DoublyLinkedListNode<T> head) {
     this.head = head;
+    tail = head;
   }
 
   public void addFirst(T value) {
-    var newNode = new LinkedListSimpleNode<T>(value);
+    var newNode = new DoublyLinkedListNode<T>(value);
+    head.prev = newNode;
     newNode.next = head;
     head = newNode;
   }
 
   public void removeFirst() {
     head = head.next;
+    head.prev = null;
   }
 
-  public LinkedListSimpleNode<T> pop() {
+  public DoublyLinkedListNode<T> pop() {
     var temp = head;
     head = head.next;
+    head.prev = null;
     return temp;
   }
 
@@ -39,7 +45,7 @@ public class LinkedListSimple<T> {
     slow.next = null;
   }
 
-  public LinkedListSimpleNode<T> dequeue() {
+  public DoublyLinkedListNode<T> dequeue() {
     var slow = head;
     var fast = head.next;
     while (fast.next != null) {
@@ -51,26 +57,21 @@ public class LinkedListSimple<T> {
   }
 
   public void add(T value) {
-    var newNode = new LinkedListSimpleNode<T>(value);
+    var newNode = new DoublyLinkedListNode<T>(value);
 
     if (head == null) {
       head = newNode;
+      tail = newNode;
       return;
     }
 
-    var current = head;
-
-    while (current.next != null) {
-      current = current.next;
-    }
-    current.next = newNode;
-
+    tail.next = newNode;
+    newNode.prev = tail;
+    tail = newNode;
   }
 
-  public LinkedListSimpleNode<T> search(T value) {
+  public DoublyLinkedListNode<T> search(T value) {
     var current = head;
-    // c
-    // 1 -> 2 -> 3 -> null
     while (current != null) {
       if (current.value.equals(value)) {
         return current;
@@ -81,17 +82,16 @@ public class LinkedListSimple<T> {
   }
 
   public void read() {
-    var str = "";
+    var str = "null <-> ";
     var current = head;
     if (current == null) {
       System.out.println("null");
       return;
     }
-    // "1 -> 2 -> 3 -> null"
+    // "null <-> 1 <-> 2 <-> 3 <-> null"
     while (current != null) {
-      str += current.value + " -> ";
+      str += current.value + " <-> ";
       current = current.next;
-
     }
     System.out.println(str + "null");
 
@@ -109,36 +109,31 @@ public class LinkedListSimple<T> {
   }
 
   public void remove(T value) {
+    if (head == null) {
+      return;
+    }
+
+    if (head.equals(value)) {
+      this.removeFirst();
+      return;
+    }
+
     var current = head;
-
-    if (current == null) {
-      return;
-    }
-
-    if (current.value.equals(value)) {
-      head = current.next;
-      // this is unnecessary to delete the head
-      // current.next = null;
-      // current = null;
-      return;
-    }
-
     var temp = current.next;
 
-    // "1 -> 2 -> 3 -> null"
+    // null <-> 0 <-> 1 <-> 2 <-> null
+
     while (temp != null) {
       if (temp.value.equals(value)) {
         current.next = temp.next;
-        // this is unnecessary to delete the node
-        // temp.next = null;
-        // temp = null;
+        current = temp.next;
+        current.prev = temp.prev;
         return;
       }
 
       current = current.next;
       temp = temp.next;
     }
-
   }
 
   public boolean isCircularLinkedList() {
@@ -152,11 +147,5 @@ public class LinkedListSimple<T> {
       }
     }
     return false;
-
-    // t
-    // l
-    // 1 -> 2 -> 3 -> 4 -> 5 -> 1
-
   }
-
 }
